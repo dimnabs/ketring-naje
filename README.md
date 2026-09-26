@@ -16,6 +16,7 @@ Web app untuk mengelola bisnis katering bergizi berbasis langganan.
 - Dashboard pelanggan terproteksi
 - Onboarding profil, alamat utama, alergi, dan preferensi makanan
 - Dashboard admin dengan pemeriksaan role
+- Pengelolaan paket, katalog menu bergizi, dan kalender menu admin
 - Skema awal alamat, paket, langganan, menu, pesanan, dan pembayaran
 
 Beberapa kartu dashboard masih menggunakan data contoh untuk memvalidasi alur dan desain sebelum modul transaksi dikembangkan.
@@ -144,6 +145,5 @@ Jika image aplikasi baru bermasalah, checkout commit aplikasi sebelumnya lalu ja
 
 ## Iterasi berikutnya
 
-1. CRUD paket serta kalender menu admin
-2. Checkout dan webhook payment gateway
-3. Generator pesanan harian serta rekap produksi
+1. Checkout dan webhook payment gateway
+2. Generator pesanan harian serta rekap produksi
