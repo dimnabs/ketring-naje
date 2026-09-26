@@ -96,7 +96,9 @@ POSTGRES_USER=naje
 POSTGRES_PASSWORD=password_database_yang_kuat
 ```
 
-`AUTH_SECRET` dapat dibuat dengan `openssl rand -base64 32`. Jangan commit file `.env`.
+`AUTH_SECRET` dapat dibuat dengan `openssl rand -base64 32`. Untuk
+`POSTGRES_PASSWORD`, gunakan `openssl rand -hex 32` agar password aman saat
+dimasukkan ke dalam connection URL PostgreSQL. Jangan commit file `.env`.
 
 ### 3. Jalankan deployment
 

@@ -26,6 +26,7 @@ fi
 
 auth_url=$(sed -n 's/^AUTH_URL=//p' "$env_file" | tail -n 1)
 app_domain=$(sed -n 's/^APP_DOMAIN=//p' "$env_file" | tail -n 1)
+postgres_password=$(sed -n 's/^POSTGRES_PASSWORD=//p' "$env_file" | tail -n 1)
 
 case "$app_domain" in
   http://*|https://*|*/*) echo "Error: APP_DOMAIN harus berupa hostname tanpa protokol atau path." >&2; exit 1 ;;
@@ -37,5 +38,13 @@ if [ "$app_domain" != "localhost" ]; then
     *) echo "Error: AUTH_URL produksi harus menggunakan https://" >&2; exit 1 ;;
   esac
 fi
+
+case "$postgres_password" in
+  *[!A-Za-z0-9._~-]*)
+    echo "Error: POSTGRES_PASSWORD hanya boleh memakai karakter URL-safe: huruf, angka, titik, underscore, tilde, dan tanda minus." >&2
+    echo "Buat password yang aman dengan: openssl rand -hex 32" >&2
+    exit 1
+    ;;
+esac
 
 echo "Environment valid."
