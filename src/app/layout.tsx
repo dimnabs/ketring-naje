@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className="h-full scroll-smooth">
+    <html lang="id" className="h-full scroll-smooth" data-scroll-behavior="smooth">
       <body className="min-h-full">{children}</body>
     </html>
   );
