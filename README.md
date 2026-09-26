@@ -64,6 +64,81 @@ npm run typecheck
 npm run build
 ```
 
+## Deployment VPS
+
+Target yang disarankan adalah Ubuntu LTS dengan minimal 2 vCPU, RAM 2 GB, Docker Engine, Docker Compose plugin, domain, serta port `80` dan `443` yang terbuka. PostgreSQL hanya dipublikasikan ke loopback VPS dan tidak dapat diakses langsung dari internet.
+
+### 1. Persiapkan DNS dan Google OAuth
+
+- Arahkan record `A` domain ke IP publik VPS.
+- Tambahkan `https://domain.example` sebagai Authorized JavaScript Origin.
+- Tambahkan `https://domain.example/api/auth/callback/google` sebagai Authorized Redirect URI.
+
+### 2. Persiapkan aplikasi di VPS
+
+Clone repository ke direktori seperti `/opt/naje`, lalu:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+```
+
+Isi minimal variabel berikut:
+
+```dotenv
+APP_DOMAIN=domain.example
+AUTH_URL=https://domain.example
+AUTH_SECRET=nilai_acak_minimal_32_byte
+AUTH_GOOGLE_ID=google_client_id
+AUTH_GOOGLE_SECRET=google_client_secret
+POSTGRES_DB=katering_naje
+POSTGRES_USER=naje
+POSTGRES_PASSWORD=password_database_yang_kuat
+```
+
+`AUTH_SECRET` dapat dibuat dengan `openssl rand -base64 32`. Jangan commit file `.env`.
+
+### 3. Jalankan deployment
+
+```bash
+./scripts/deploy.sh
+```
+
+Script akan memvalidasi environment, menyalakan PostgreSQL, membuat backup, membangun image, menjalankan migrasi, menyalakan aplikasi dan Caddy, kemudian menunggu health check. Caddy menerbitkan serta memperbarui sertifikat HTTPS secara otomatis.
+
+Untuk deployment berikutnya:
+
+```bash
+git pull --ff-only
+./scripts/deploy.sh
+```
+
+### Backup database
+
+Backup manual:
+
+```bash
+./scripts/backup-db.sh
+```
+
+Backup disimpan di `backups/` dengan permission terbatas dan retensi default 14 hari. Salin backup secara berkala ke storage lain agar kegagalan disk VPS tidak menghilangkan database sekaligus backup-nya.
+
+Contoh penjadwalan harian melalui crontab VPS:
+
+```cron
+0 2 * * * cd /opt/naje && ./scripts/backup-db.sh >> /var/log/naje-backup.log 2>&1
+```
+
+### Operasional
+
+```bash
+docker compose ps
+docker compose logs -f --tail=200 app caddy
+docker compose restart app
+```
+
+Jika image aplikasi baru bermasalah, checkout commit aplikasi sebelumnya lalu jalankan kembali `./scripts/deploy.sh`. Jangan mengembalikan database tanpa meninjau kompatibilitas migrasinya terlebih dahulu.
+
 ## Iterasi berikutnya
 
 1. Onboarding profil, alamat, alergi, dan preferensi pelanggan
