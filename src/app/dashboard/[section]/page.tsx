@@ -24,7 +24,7 @@ export default async function CustomerSectionPage({
   const title = sectionNames[section] ?? "Halaman pelanggan";
 
   return (
-    <AppShell name={session.user.name} email={session.user.email}>
+    <AppShell name={session.user.name} email={session.user.email} activeHref={`/dashboard/${section}`}>
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:py-12">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-semibold text-[#668b42]"><ArrowLeft size={16} /> Ringkasan</Link>
         <h1 className="display-font mt-6 text-4xl">{title}</h1>

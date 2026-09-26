@@ -30,7 +30,7 @@ export default async function AdminSectionPage({
   const title = sectionNames[section] ?? "Halaman admin";
 
   return (
-    <AppShell mode="admin" name={session.user.name} email={session.user.email}>
+    <AppShell mode="admin" name={session.user.name} email={session.user.email} activeHref={`/admin/${section}`}>
       <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-12">
         <Link href="/admin" className="inline-flex items-center gap-2 text-sm font-semibold text-[#668b42]"><ArrowLeft size={16} /> Operasional</Link>
         <h1 className="display-font mt-6 text-4xl">{title}</h1>

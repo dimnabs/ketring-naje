@@ -19,6 +19,7 @@ type AppShellProps = {
   name?: string | null;
   email?: string | null;
   mode?: "customer" | "admin";
+  activeHref?: string;
 };
 
 const customerLinks = [
@@ -37,8 +38,9 @@ const adminLinks = [
   { label: "Paket", href: "/admin/paket", icon: PackageOpen },
 ];
 
-export function AppShell({ children, name, email, mode = "customer" }: AppShellProps) {
+export function AppShell({ children, name, email, mode = "customer", activeHref }: AppShellProps) {
   const links = mode === "admin" ? adminLinks : customerLinks;
+  const selectedHref = activeHref ?? (mode === "admin" ? "/admin" : "/dashboard");
 
   return (
     <div className="min-h-screen bg-[#f3f5ef] lg:grid lg:grid-cols-[270px_1fr]">
@@ -57,11 +59,11 @@ export function AppShell({ children, name, email, mode = "customer" }: AppShellP
           {mode === "admin" ? "Admin workspace" : "Akun saya"}
         </p>
         <nav className="space-y-1">
-          {links.map(({ label, href, icon: Icon }, index) => (
+          {links.map(({ label, href, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${index === 0 ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/[.06] hover:text-white"}`}
+              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${selectedHref === href ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/[.06] hover:text-white"}`}
             >
               <Icon size={18} /> {label}
             </Link>

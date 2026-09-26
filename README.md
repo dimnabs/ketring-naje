@@ -14,6 +14,7 @@ Web app untuk mengelola bisnis katering bergizi berbasis langganan.
 - Google sign-in melalui Auth.js
 - Penyimpanan akun dan sesi di PostgreSQL
 - Dashboard pelanggan terproteksi
+- Onboarding profil, alamat utama, alergi, dan preferensi makanan
 - Dashboard admin dengan pemeriksaan role
 - Skema awal alamat, paket, langganan, menu, pesanan, dan pembayaran
 
@@ -143,7 +144,6 @@ Jika image aplikasi baru bermasalah, checkout commit aplikasi sebelumnya lalu ja
 
 ## Iterasi berikutnya
 
-1. Onboarding profil, alamat, alergi, dan preferensi pelanggan
-2. CRUD paket serta kalender menu admin
-3. Checkout dan webhook payment gateway
-4. Generator pesanan harian serta rekap produksi
+1. CRUD paket serta kalender menu admin
+2. Checkout dan webhook payment gateway
+3. Generator pesanan harian serta rekap produksi

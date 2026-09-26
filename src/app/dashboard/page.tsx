@@ -1,3 +1,4 @@
+import { and, eq } from "drizzle-orm";
 import { CalendarDays, ChevronRight, Clock3, MapPin, UtensilsCrossed } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -5,22 +6,55 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { AppShell } from "@/components/app-shell";
+import { db } from "@/lib/db";
+import { addresses, users } from "@/lib/db/schema";
+import { allergyOptions, optionLabels } from "@/lib/profile-options";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user?.email) redirect("/login");
+
+  const [account] = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      profileCompleted: users.profileCompleted,
+      allergies: users.allergies,
+    })
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+
+  if (!account) redirect("/login");
+  if (!account.profileCompleted) redirect("/dashboard/pengaturan?onboarding=1");
+
+  const [primaryAddress] = await db
+    .select({ label: addresses.label, city: addresses.city })
+    .from(addresses)
+    .where(and(eq(addresses.userId, account.id), eq(addresses.isPrimary, true)))
+    .limit(1);
+
+  const allergyLabels = optionLabels(account.allergies, allergyOptions);
+  const todayLabel = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date());
 
   return (
-    <AppShell name={session.user.name} email={session.user.email}>
+    <AppShell name={account.name} email={account.email}>
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:py-12">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="text-sm font-semibold text-[#668b42]">Halo, {session.user.name?.split(" ")[0] ?? "teman"} 👋</p>
+            <p className="text-sm font-semibold text-[#668b42]">Halo, {account.name?.split(" ")[0] ?? "teman"} 👋</p>
             <h1 className="display-font mt-2 text-4xl">Makan enakmu sudah disiapkan.</h1>
           </div>
-          <p className="text-sm text-[#6c8179]">Senin, 28 September 2026</p>
+          <p className="text-sm text-[#6c8179]">{todayLabel}</p>
         </div>
 
         <section className="mt-9 grid gap-5 lg:grid-cols-[1.3fr_.7fr]">
@@ -54,8 +88,8 @@ export default async function DashboardPage() {
         <section className="mt-5 grid gap-5 md:grid-cols-3">
           {[
             [CalendarDays, "Jadwal minggu ini", "5 pengiriman terjadwal", "/dashboard/jadwal"],
-            [MapPin, "Alamat pengiriman", "Rumah · Jakarta", "/dashboard/pengaturan"],
-            [UtensilsCrossed, "Preferensi makanan", "Tanpa kacang tanah", "/dashboard/pengaturan"],
+            [MapPin, "Alamat pengiriman", primaryAddress ? `${primaryAddress.label} · ${primaryAddress.city}` : "Belum diatur", "/dashboard/pengaturan"],
+            [UtensilsCrossed, "Catatan alergi", allergyLabels.length ? allergyLabels.slice(0, 2).join(", ") : "Tidak ada alergi dicatat", "/dashboard/pengaturan"],
           ].map(([Icon, title, detail, href]) => {
             const CardIcon = Icon as typeof CalendarDays;
             return (

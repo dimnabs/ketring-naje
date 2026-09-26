@@ -29,6 +29,8 @@ export const users = pgTable("users", {
   phone: varchar("phone", { length: 24 }),
   role: userRole("role").notNull().default("customer"),
   profileCompleted: boolean("profile_completed").notNull().default(false),
+  dietaryPreferences: jsonb("dietary_preferences").$type<string[]>().notNull().default([]),
+  allergies: jsonb("allergies").$type<string[]>().notNull().default([]),
   dietaryNotes: text("dietary_notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
